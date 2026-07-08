@@ -71,6 +71,18 @@ im Betrieb ist also **Internet** nötig. Das Image selbst ist nur die statische 
 | Standalone / Docker Hub | `docker build .` (Default `BASE=/`) | läuft an `/` |
 | Hinter einem Reverse-Proxy im Unterpfad | `docker build --build-arg BASE=/strudel-kurs/ .` | läuft an `/strudel-kurs/` |
 
+### Neues Image veröffentlichen (Docker Hub)
+
+```bash
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t dadalama/strudel-kurs:latest -t dadalama/strudel-kurs:1.0.0 --push .
+```
+
+⚠️ **Kein `--build-arg BASE=/` übergeben!** Der Standalone-Default ist ohnehin `/`
+(im Dockerfile), und unter **Git Bash / MSYS (Windows)** würde der Wert `/` vor Docker
+in einen Windows-Pfad (`C:/Program Files/Git/`) verbogen → kaputte Asset-Pfade. Einfach
+weglassen. (Der GitHub-Actions-Weg läuft auf Linux und darf `BASE=/` gefahrlos setzen.)
+
 ## Deploy auf lernmodule.dirk-schulenburg.net
 
 Eigener Container hinter Traefik (Muster wie `bos-mathe`). Vom Repo-Root des Docker-Monorepos:
