@@ -1,0 +1,10 @@
+# Standalone run: `docker compose up -d` -> http://localhost:8080/
+# Builds with the default BASE=/ (served at the web root).
+services:
+  strudel-kurs:
+    build: .
+    image: dadalama/strudel-kurs:latest
+    container_name: strudel-kurs
+    ports:
+      - "8080:80"
+    restart: unless-stopped
