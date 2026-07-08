@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { chapters, cheatsheet } from './data/chapters.js';
+import { chapterMeta, cheatsheetCodes } from './data/chapters.js';
+import { LANGS, getBundle, loadLang, saveLang, applyDir } from './i18n/index.js';
 import StrudelEditor from './components/StrudelEditor.jsx';
 import { useRoute, navigate } from './lib/router.js';
 
@@ -13,9 +14,25 @@ function loadVisited() {
   }
 }
 
+// Tiny placeholder interpolation: format('Frage {a} von {b}', {a:1,b:9}).
+function format(str, vars) {
+  return String(str).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
+}
+
 export default function App() {
   const route = useRoute();
   const [visited, setVisited] = useState(loadVisited);
+  const [lang, setLang] = useState(loadLang);
+
+  useEffect(() => {
+    applyDir(lang);
+    saveLang(lang);
+  }, [lang]);
+
+  const bundle = getBundle(lang);
+  const ui = bundle.ui;
+  const chapters = chapterMeta.map((m) => ({ ...m, ...bundle.chapters[m.id] }));
+  const cheatsheet = cheatsheetCodes.map((c) => ({ code: c.code, desc: bundle.cheatsheet[c.id] }));
 
   const markVisited = (id) => {
     setVisited((prev) => {
@@ -31,61 +48,92 @@ export default function App() {
     });
   };
 
+  const switcher = <LangSwitcher lang={lang} setLang={setLang} label={ui.langLabel} />;
+
   if (route.view === 'chapter') {
     const index = chapters.findIndex((c) => c.id === route.id);
-    if (index === -1) return <Home visited={visited} />;
-    return (
-      <Chapter
-        chapter={chapters[index]}
-        index={index}
-        onVisit={markVisited}
-      />
-    );
+    if (index !== -1) {
+      return (
+        <Chapter
+          chapters={chapters}
+          chapter={chapters[index]}
+          index={index}
+          ui={ui}
+          onVisit={markVisited}
+          switcher={switcher}
+        />
+      );
+    }
   }
-  return <Home visited={visited} />;
+  return (
+    <Home
+      chapters={chapters}
+      cheatsheet={cheatsheet}
+      ui={ui}
+      visited={visited}
+      switcher={switcher}
+    />
+  );
 }
 
-function Home({ visited }) {
+function LangSwitcher({ lang, setLang, label }) {
+  return (
+    <div className="lang-switcher">
+      <span className="lang-globe" aria-hidden="true">🌐</span>
+      <select
+        className="lang-select"
+        value={lang}
+        aria-label={label}
+        onChange={(e) => setLang(e.target.value)}
+      >
+        {LANGS.map((l) => (
+          <option key={l.code} value={l.code}>
+            {l.flag} {l.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function Home({ chapters, cheatsheet, ui, visited, switcher }) {
   const doneCount = chapters.filter((c) => visited.has(c.id)).length;
   return (
     <div className="page">
+      <div className="topbar">{switcher}</div>
+
       <header className="hero">
-        <div className="hero-badge">🎧 Musik &amp; Code</div>
-        <h1>Programmieren lernen – mit Musik</h1>
-        <p className="hero-sub">
-          Mach im Browser deine eigene Musik. Nebenbei lernst du, wie Programmieren
-          funktioniert. Kein Vorwissen nötig. In einfacher Sprache, Schritt für Schritt.
-        </p>
+        <div className="hero-badge">🎧 {ui.brandBadge}</div>
+        <h1>{ui.homeTitle}</h1>
+        <p className="hero-sub">{ui.homeSub}</p>
         <button className="btn btn-big" onClick={() => navigate('/kapitel/erster-beat')}>
-          ▶ Los geht’s
+          ▶ {ui.start}
         </button>
         {doneCount > 0 && (
           <p className="hero-progress">
-            Du hast {doneCount} von {chapters.length} Kapiteln geöffnet.
+            {format(ui.progress, { done: doneCount, total: chapters.length })}
           </p>
         )}
       </header>
 
       <section className="callout">
-        <strong>So funktioniert es:</strong> In jedem Kapitel steht ein kleiner Code.
-        Klicke auf <span className="kbd-inline">▶ Abspielen</span> und höre zu. Dann ändere
-        den Code und höre, was passiert. Du kannst nichts kaputt machen.
+        <strong>{ui.howtoLabel}</strong> {ui.howto}
       </section>
 
       <section>
-        <h2 className="section-title">Kapitel</h2>
+        <h2 className="section-title">{ui.chaptersHeading}</h2>
         <div className="grid">
           {chapters.map((c, i) => (
-            <button
-              key={c.id}
-              className="card"
-              onClick={() => navigate(`/kapitel/${c.id}`)}
-            >
+            <button key={c.id} className="card" onClick={() => navigate(`/kapitel/${c.id}`)}>
               <div className="card-top">
                 <span className="card-emoji">{c.emoji}</span>
-                {visited.has(c.id) && <span className="card-check" title="besucht">✓</span>}
+                {visited.has(c.id) && (
+                  <span className="card-check" title={ui.visited}>
+                    ✓
+                  </span>
+                )}
               </div>
-              <div className="card-num">Kapitel {i + 1}</div>
+              <div className="card-num">{format(ui.chapterLabel, { n: i + 1 })}</div>
               <div className="card-title">{c.title}</div>
               <div className="card-concept">{c.concept}</div>
             </button>
@@ -94,8 +142,8 @@ function Home({ visited }) {
       </section>
 
       <section className="cheat">
-        <h2 className="section-title">Spickzettel</h2>
-        <p className="muted">Die wichtigsten Bausteine auf einen Blick:</p>
+        <h2 className="section-title">{ui.cheatsheetHeading}</h2>
+        <p className="muted">{ui.cheatsheetSub}</p>
         <div className="cheat-grid">
           {cheatsheet.map((row) => (
             <div className="cheat-row" key={row.code}>
@@ -107,14 +155,17 @@ function Home({ visited }) {
       </section>
 
       <footer className="foot">
-        Gebaut mit <a href="https://strudel.cc" target="_blank" rel="noreferrer">Strudel</a>{' '}
-        · Ein Lernmodul von Dirk Schulenburg
+        {ui.footerPre}{' '}
+        <a href="https://strudel.cc" target="_blank" rel="noreferrer">
+          {ui.footerLink}
+        </a>{' '}
+        {ui.footerPost}
       </footer>
     </div>
   );
 }
 
-function Chapter({ chapter, index, onVisit }) {
+function Chapter({ chapters, chapter, index, ui, onVisit, switcher }) {
   useEffect(() => {
     onVisit(chapter.id);
   }, [chapter.id, onVisit]);
@@ -125,10 +176,13 @@ function Chapter({ chapter, index, onVisit }) {
   return (
     <div className="page">
       <nav className="topnav">
-        <button className="link" onClick={() => navigate('/')}>← Übersicht</button>
+        <button className="link" onClick={() => navigate('/')}>
+          ← {ui.overview}
+        </button>
         <span className="topnav-count">
-          Kapitel {index + 1} / {chapters.length}
+          {format(ui.chapterOf, { a: index + 1, b: chapters.length })}
         </span>
+        {switcher}
       </nav>
 
       <header className="chapter-head">
@@ -147,22 +201,22 @@ function Chapter({ chapter, index, onVisit }) {
 
       <section className="bridge">
         <div className="bridge-col bridge-music">
-          <div className="bridge-label">🎵 In der Musik</div>
+          <div className="bridge-label">🎵 {ui.musicLabel}</div>
           <p>{chapter.bridge.music}</p>
         </div>
         <div className="bridge-arrow">↔</div>
         <div className="bridge-col bridge-code">
-          <div className="bridge-label">💻 Beim Programmieren</div>
+          <div className="bridge-label">💻 {ui.codeLabel}</div>
           <p>{chapter.bridge.code}</p>
         </div>
       </section>
 
       {chapter.editors.map((ed, i) => (
-        <StrudelEditor key={`${chapter.id}-${i}`} code={ed.code} />
+        <StrudelEditor key={`${chapter.id}-${i}`} code={ed.code} ui={ui} />
       ))}
 
       <section className="tasks">
-        <h2>✏️ Probier das</h2>
+        <h2>✏️ {ui.tryThis}</h2>
         <ol>
           {chapter.tasks.map((t, i) => (
             <li key={i}>{t}</li>
@@ -191,7 +245,7 @@ function Chapter({ chapter, index, onVisit }) {
           </button>
         ) : (
           <button className="btn" onClick={() => navigate('/')}>
-            Fertig! Zur Übersicht ✓
+            {ui.finish} ✓
           </button>
         )}
       </nav>
