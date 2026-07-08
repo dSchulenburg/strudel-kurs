@@ -14,7 +14,7 @@ import { loadStrudel } from '../lib/strudelLoader.js';
  * ['code']). Setting it before the script finishes loading is fine: on upgrade
  * the component replays attributeChangedCallback for existing attributes.
  */
-export default function StrudelEditor({ code }) {
+export default function StrudelEditor({ code, ui }) {
   const hostRef = useRef(null);
   const elRef = useRef(null);
   const [status, setStatus] = useState('loading'); // loading | ready | error
@@ -50,22 +50,19 @@ export default function StrudelEditor({ code }) {
     <div className="strudel">
       <div className="strudel-toolbar">
         <button className="btn btn-play" onClick={play} disabled={status !== 'ready'}>
-          ▶ Abspielen
+          ▶ {ui.play}
         </button>
         <button className="btn btn-stop" onClick={stop} disabled={status !== 'ready'}>
-          ■ Stopp
+          ■ {ui.stop}
         </button>
         <span className="strudel-hint">
-          Tipp: <kbd>Strg</kbd>+<kbd>Enter</kbd> spielt · <kbd>Strg</kbd>+<kbd>.</kbd> stoppt
+          {ui.kbdHintPre} <kbd>{ui.ctrlKey}</kbd>+<kbd>Enter</kbd> {ui.kbdPlays} ·{' '}
+          <kbd>{ui.ctrlKey}</kbd>+<kbd>.</kbd> {ui.kbdStops}
         </span>
       </div>
       <div ref={hostRef} className="strudel-host" />
-      {status === 'loading' && <p className="strudel-note">Editor lädt …</p>}
-      {status === 'error' && (
-        <p className="strudel-note strudel-note--error">
-          Der Editor konnte nicht laden. Bist du online? Lade die Seite neu.
-        </p>
-      )}
+      {status === 'loading' && <p className="strudel-note">{ui.editorLoading}</p>}
+      {status === 'error' && <p className="strudel-note strudel-note--error">{ui.editorError}</p>}
     </div>
   );
 }
