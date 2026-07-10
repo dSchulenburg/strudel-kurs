@@ -4,7 +4,7 @@ Ein Lernmodul, das **Programmiergrundlagen spielerisch über Live-Coding-Musik**
 Zielgruppe: Migrantinnen und Migranten / Einsteiger ohne Vorwissen. Sprache: **einfaches
 Deutsch (A2/B1)**.
 
-Jedes der 9 Kapitel koppelt ein hörbares Musik-Erlebnis an genau **ein** Programmierkonzept:
+Jedes der 12 Kapitel koppelt ein hörbares Musik-Erlebnis an genau **ein** Programmierkonzept:
 
 | # | Kapitel | Konzept |
 |---|---------|---------|
