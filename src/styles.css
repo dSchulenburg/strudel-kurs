@@ -207,6 +207,8 @@ a { color: var(--accent); }
 }
 
 .foot { color: var(--muted); text-align: center; font-size: .85rem; margin-top: 48px; }
+.foot p { margin: 0; }
+.foot p + p { margin-top: 8px; opacity: .75; }
 
 /* ---------- Mobile ---------- */
 @media (max-width: 560px) {

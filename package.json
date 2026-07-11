@@ -1,8 +1,12 @@
 {
   "name": "strudel-kurs",
-  "private": true,
+  "private": false,
   "version": "0.1.0",
   "type": "module",
+  "license": "MIT",
+  "author": "Dirk Schulenburg (https://dirk-schulenburg.net)",
+  "homepage": "https://lernmodule.dirk-schulenburg.net/strudel-kurs/",
+  "description": "Programmieren lernen mit Musik: Live-Coding auf Basis von strudel.cc – ein Konzept pro Kapitel, in einfacher Sprache. Vom ersten Beat bis zum eigenen Stück. Open Educational Resource (Inhalte CC BY 4.0)",
   "scripts": {
     "dev": "vite --port 3030",
     "build": "vite build",

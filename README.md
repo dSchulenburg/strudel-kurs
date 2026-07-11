@@ -101,3 +101,14 @@ unter `lernmodule.dirk-schulenburg.net/strudel-kurs/`.
   concept, intro[], bridge{music,code}, editors[{code}], tasks[], tip).
 - **Mehrsprachig:** die Texte in `chapters.js` sind zentral – für DE/EN/UA/AR später eine
   Sprach-Ebene analog zu `bos-mathe/src/i18n/strings.js` einziehen.
+
+## Lizenz
+
+Dieses Lernmodul ist eine **Open Educational Resource (OER)**.
+
+- **Inhalte** (Aufgaben, Texte, Grafiken): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), © 2026 Dirk Schulenburg
+- **Quellcode**: [MIT](./LICENSE)
+
+Weiterverwendung bitte mit Namensnennung: „*Musik & Code* von Dirk Schulenburg (dirk-schulenburg.net), CC BY 4.0".
+
+Der eingebettete Live-Editor basiert auf Strudel (strudel.cc), lizenziert unter AGPL-3.0.

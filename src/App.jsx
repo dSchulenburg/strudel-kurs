@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { chapterMeta, cheatsheetCodes } from './data/chapters.js';
 import { LANGS, getBundle, loadLang, saveLang, applyDir } from './i18n/index.js';
 import StrudelEditor from './components/StrudelEditor.jsx';
+import { OerFooter } from './components/OerFooter.jsx';
 import { useRoute, navigate } from './lib/router.js';
 
 const STORAGE_KEY = 'strudel-kurs:besucht';
@@ -155,11 +156,25 @@ function Home({ chapters, cheatsheet, ui, visited, switcher }) {
       </section>
 
       <footer className="foot">
-        {ui.footerPre}{' '}
-        <a href="https://strudel.cc" target="_blank" rel="noreferrer">
-          {ui.footerLink}
-        </a>{' '}
-        {ui.footerPost}
+        <p>
+          {ui.footerPre}{' '}
+          <a href="https://strudel.cc" target="_blank" rel="noreferrer">
+            {ui.footerLink}
+          </a>{' '}
+          {ui.footerPost}
+        </p>
+        <p className="foot-license">
+          <strong>Musik &amp; Code</strong> von Dirk Schulenburg ·{' '}
+          <a href="https://creativecommons.org/licenses/by/4.0/deed.de"
+             target="_blank" rel="noopener noreferrer license">Inhalte CC&nbsp;BY&nbsp;4.0</a>
+          {' · '}
+          <a href="./LICENSE" target="_blank" rel="noopener noreferrer license">Code MIT</a>
+          {' · '}
+          <a href="https://dirk-schulenburg.net" target="_blank" rel="noopener noreferrer">dirk-schulenburg.net</a>
+        </p>
+        <p className="foot-license">
+          Live-Editor: Strudel (AGPL-3.0)
+        </p>
       </footer>
     </div>
   );
@@ -249,6 +264,8 @@ function Chapter({ chapters, chapter, index, ui, onVisit, switcher }) {
           </button>
         )}
       </nav>
+
+      <OerFooter title="Musik & Code" />
     </div>
   );
 }
