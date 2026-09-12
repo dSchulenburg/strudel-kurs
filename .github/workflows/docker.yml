@@ -3,7 +3,8 @@ name: Build & push Docker image
 # Push a multi-arch image to Docker Hub when a version tag is pushed (e.g. v1.0.0),
 # or manually via the Actions tab. Requires two repo secrets:
 #   DOCKERHUB_USERNAME  – your Docker Hub user (e.g. dadalama)
-#   DOCKERHUB_TOKEN     – a Docker Hub access token (Account Settings -> Security)
+#   DOCKERHUB_TOKEN     – a Docker Hub personal access token, Read & Write
+#                         (https://app.docker.com/settings/personal-access-tokens)
 on:
   push:
     tags: ['v*']
